@@ -10,12 +10,11 @@ var map = document.querySelector('.map');
 var pinsTemplate = document.querySelector('template').content.querySelector('.map__pin');
 var pinsPlace = map.querySelector('.map__pins');
 var cardTemplate = document.querySelector('template').content.querySelector('.map__card');
-var cardPlace = map.querySelector('.map');
 
 var rentalUnits = generateRentalUnits(AVATARS_NUMBERS, TITLES, TYPES, TIMES, FEATURES, NUMBER_OF_RENTAL_UNIT);
 map.classList.remove('map--faded');
 addPinsToMap(rentalUnits, pinsTemplate, pinsPlace);
-addCards(rentalUnits, cardTemplate, cardPlace);
+addCards(rentalUnits, cardTemplate, map);
 
 
 function getNonrepeatingRandomValue(array) {
@@ -82,7 +81,15 @@ function translateType(string) {
 
 function addLiFromArray(array, place) {
   for (var i = 0; i < array.length; i++) {
-    place.appendChild('<li class="feature' + ' feature--' + array[i] + '</li>');
+    var newLi = document.createElement('li');
+    newLi.className = 'feature feature--' + array[i];
+    place.appendChild(newLi);
+  }
+}
+
+function clearChildren(place) {
+  while (place.children.length !== 0) {
+    place.children[0].remove();
   }
 }
 
@@ -94,6 +101,7 @@ function renderCard(rentalUnit, cardTemplate) {
   card.querySelector('h4').textContent = translateType(rentalUnit.offer.type);
   card.querySelector('h4').nextSibling.textContent = rentalUnit.offer.rooms + ' для ' + rentalUnit.offer.guests + ' гостей';
   card.querySelector('h4').nextSibling.nextSibling.textContent = 'Заезд после ' + rentalUnit.offer.checkin + ', ' + rentalUnit.offer.checkout;
+  clearChildren(card.querySelector('.popup__features'));
   addLiFromArray(rentalUnit.offer.features, card.querySelector('.popup__features'));
   card.querySelector('.popup__features').nextSibling.textContent = rentalUnit.offer.description;
   card.querySelector('img').setAttribute('src', rentalUnit.author.avatar);
