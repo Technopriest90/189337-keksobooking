@@ -43,10 +43,25 @@ function generateRentalUnits(avatars, titles, types, times, features, number) {
   for (var i = 0; i < number; i++) {
     var locationX = getRandomNumber(300, 900);
     var locationY = getRandomNumber(100, 500);
+    var rooms = getRandomNumber(1, 5);
+    var quests = Math.floor(rooms * 1.5);
     objects[i] = {
       author: {avatar: 'img/avatars/user' + getNonrepeatingRandomValue(avatars) + '.png'},
-      offer: {title: getNonrepeatingRandomValue(titles), address: locationX + ', ' + locationY, price: getRandomNumber(1000, 1000000), type: getRandomValue(types), rooms: getRandomNumber(1, 5), guests: getRandomNumber(1, 5), checkin: getRandomValue(times), checkout: getRandomValue(times), features: getRandomArray(features), description: '', photos: []},
-      location: {x: locationX, y: locationY}};
+      offer: {
+        title: getNonrepeatingRandomValue(titles),
+        address: locationX + ', ' + locationY,
+        price: getRandomNumber(1000, 1000000),
+        type: getRandomValue(types),
+        rooms: rooms,
+        guests: quests,
+        checkin: getRandomValue(times),
+        checkout: getRandomValue(times),
+        features: getRandomArray(features),
+        description: '',
+        photos: []
+      },
+      location: {x: locationX, y: locationY}
+    };
   }
   return objects;
 }
@@ -100,7 +115,7 @@ function renderCard(rentalUnit, cardTemplate) {
   card.querySelector('.popup__price').textContent = rentalUnit.offer.price + '&#x20bd;/ночь';
   card.querySelector('h4').textContent = translateType(rentalUnit.offer.type);
   card.querySelector('h4').nextSibling.textContent = rentalUnit.offer.rooms + ' для ' + rentalUnit.offer.guests + ' гостей';
-  card.querySelector('h4').nextSibling.nextSibling.textContent = 'Заезд после ' + rentalUnit.offer.checkin + ', ' + rentalUnit.offer.checkout;
+  card.querySelector('.popup__features').previousElementSibling.textContent = 'Заезд после ' + rentalUnit.offer.checkin + ', выезд до ' + rentalUnit.offer.checkout;
   clearChildren(card.querySelector('.popup__features'));
   addLiFromArray(rentalUnit.offer.features, card.querySelector('.popup__features'));
   card.querySelector('.popup__features').nextSibling.textContent = rentalUnit.offer.description;
