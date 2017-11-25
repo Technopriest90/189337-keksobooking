@@ -165,7 +165,7 @@ function getStringRoomsGuests(rooms, guests) {
     var wordRoom = 'комната';
   } else if (rooms > 4) {
     wordRoom = 'комнат';
-  } else  {
+  } else {
     wordRoom = 'комнаты';
   }
   var wordGuest = (guests === 1) ? 'гостя' : 'гостей';
