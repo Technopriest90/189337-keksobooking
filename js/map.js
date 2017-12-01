@@ -10,11 +10,7 @@ var map = document.querySelector('.map');
 var pinsTemplate = document.querySelector('template').content.querySelector('.map__pin');
 var pinsPlace = map.querySelector('.map__pins');
 var cardTemplate = document.querySelector('template').content.querySelector('.map__card');
-
 var rentalUnits = generateRentalUnits(AVATARS_NUMBERS, TITLES, TYPES, TIMES, FEATURES, NUMBER_OF_RENTAL_UNIT);
-map.classList.remove('map--faded');
-addPinsToMap(rentalUnits, pinsTemplate, pinsPlace);
-addCards(rentalUnits, cardTemplate, map);
 
 /**
  * Gets a random nonreapeating element from an array
@@ -24,6 +20,7 @@ addCards(rentalUnits, cardTemplate, map);
 function getNonrepeatingRandomValue(array) {
   return array.splice(Math.floor(Math.random() * array.length), 1);
 }
+
 /**
  * Gets a random element from an array
  * @param {array} array - Group of elements to produce a random from them.
@@ -32,6 +29,7 @@ function getNonrepeatingRandomValue(array) {
 function getRandomValue(array) {
   return array[Math.floor(Math.random() * array.length)];
 }
+
 /**
  * Gets a random number from the range includes extreme values
  * @param {number} min - The minimum value of the range.
@@ -41,6 +39,7 @@ function getRandomValue(array) {
 function getRandomNumber(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
 /**
  * Gets a random subarray from an array.
  * @param {array} array - Group of elements to extract the subarray.
@@ -54,6 +53,7 @@ function getRandomArray(array) {
   }
   return newArr;
 }
+
 /**
  * Creates an array of rental units based on the obtained data.
  * @param {array} avatars - An array of references to avatar sellers.
@@ -91,6 +91,7 @@ function generateRentalUnits(avatars, titles, types, times, features, number) {
   }
   return objects;
 }
+
 /**
  * Generates a pin.
  * @param {object} rentalUnit - Information about the rental apartment.
@@ -104,6 +105,7 @@ function renderPin(rentalUnit, pinTemplate) {
   pin.querySelector('img').setAttribute('src', rentalUnit.author.avatar);
   return pin;
 }
+
 /**
  * Add pins to map.
  * @param {object} rental - Information about the rental apartment.
@@ -117,6 +119,7 @@ function addPinsToMap(rental, pinTemplate, pinPlace) {
   }
   pinPlace.appendChild(temp);
 }
+
 /**
  * Translates type rental apartments.
  * @param {string} string - Type rental apartments in English.
@@ -133,6 +136,7 @@ function translateType(string) {
     return 'undefined';
   }
 }
+
 /**
  * Adds to markup tags <li> with classes from array.
  * @param {array} array - Array with classes.
@@ -145,6 +149,7 @@ function addLiFromArray(array, place) {
     place.appendChild(newLi);
   }
 }
+
 /**
  * Removes all children of parent in DOM.
  * @param {object} place - Parent in DOM.
@@ -154,6 +159,7 @@ function clearChildren(place) {
     place.children[0].remove();
   }
 }
+
 /**
  * Gets a string on the number of guests and rooms for them.
  * @param {number} rooms - Number of rooms.
@@ -171,6 +177,7 @@ function getStringRoomsGuests(rooms, guests) {
   var wordGuest = (guests === 1) ? 'гостя' : 'гостей';
   return rooms + ' ' + wordRoom + ' для ' + guests + ' ' + wordGuest;
 }
+
 /**
  * Retrieves the rendering card with the announcement of delivery of apartment.
  * @param {object} rentalUnit - Information about the rental apartment.
@@ -191,6 +198,7 @@ function renderCard(rentalUnit, template) {
   card.querySelector('img').setAttribute('src', rentalUnit.author.avatar);
   return card;
 }
+
 /**
  * Adds cards with information about the rental apartment.
  * @param {object} rental - Information about the rental apartment.
@@ -204,3 +212,25 @@ function addCards(rental, template, cardPlace) {
   }
   cardPlace.appendChild(temp);
 }
+
+var mapPinMain = map.querySelector('.map__pin--main');
+var mapPins = map.querySelectorAll('.map__pin');
+var form = document.querySelector('.notice__form');
+
+function pinMainMouseupHandler() {
+  map.classList.remove('map--faded');
+  form.classList.remove('notice__form--disabled');
+  addPinsToMap(rentalUnits, pinsTemplate, pinsPlace);
+  addCards(rentalUnits, cardTemplate, map);
+}
+
+function pinClickHandler(evt) {
+  for (var i = 0; i < mapPins.length; i++) {
+    if (mapPins[i].classList.contains('pin--active')) {
+      mapPins[i].classList.remove('pin--active')
+    }
+  }
+}
+
+mapPinMain.addEventListener('mouseup', pinMainMouseupHandler);
+mapPins.addEventListener('click', pinClickHandler);
