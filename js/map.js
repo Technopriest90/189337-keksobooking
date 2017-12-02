@@ -202,35 +202,116 @@ function renderCard(rentalUnit, template) {
 /**
  * Adds cards with information about the rental apartment.
  * @param {object} rental - Information about the rental apartment.
+ * @param {string} avatar - The link to the avatar.
  * @param {object} template - Card template with information on the rental apartment.
  * @param {object} cardPlace - Place in the markup to embed cards.
  */
-function addCards(rental, template, cardPlace) {
-  var temp = document.createDocumentFragment();
-  for (var i = 0; i < rental.length; i++) {
-    temp.appendChild(renderCard(rental[i], template));
+function addCard(rental, avatar, template, cardPlace) {
+  if (cardPlace.querySelector('.popup')) {
+    cardPlace.querySelector('.popup').remove();
   }
-  cardPlace.appendChild(temp);
-}
-
-var mapPinMain = map.querySelector('.map__pin--main');
-var mapPins = map.querySelectorAll('.map__pin');
-var form = document.querySelector('.notice__form');
-
-function pinMainMouseupHandler() {
-  map.classList.remove('map--faded');
-  form.classList.remove('notice__form--disabled');
-  addPinsToMap(rentalUnits, pinsTemplate, pinsPlace);
-  addCards(rentalUnits, cardTemplate, map);
-}
-
-function pinClickHandler(evt) {
-  for (var i = 0; i < mapPins.length; i++) {
-    if (mapPins[i].classList.contains('pin--active')) {
-      mapPins[i].classList.remove('pin--active')
+  for (var i = 0; i < rental.length; i++) {
+    if (rental[i].author.avatar === avatar) {
+      cardPlace.appendChild(renderCard(rental[i], template));
     }
   }
 }
 
+var ESC_KEYCODE = 27;
+var ENTER_KEYCODE = 13;
+var mapPinMain = map.querySelector('.map__pin--main');
+var form = document.querySelector('.notice__form');
+
+enableDisableFieldset(true);
 mapPinMain.addEventListener('mouseup', pinMainMouseupHandler);
-mapPins.addEventListener('click', pinClickHandler);
+mapPinMain.addEventListener('keydown', pinMainPressEnterHandler);
+/**
+ * The event handler removes the shadow from the map and form.
+ * Activates the form. Adds pins to the map.
+ * And each pin adds event handlers pinClickHandler and pinPressEnterHandler.
+ */
+function pinMainMouseupHandler() {
+  map.classList.remove('map--faded');
+  form.classList.remove('notice__form--disabled');
+  enableDisableFieldset(false);
+  addPinsToMap(rentalUnits, pinsTemplate, pinsPlace);
+  var mapPins = map.querySelectorAll('.map__pin');
+  for (var i = 0; i < mapPins.length; i++) {
+    mapPins[i].addEventListener('click', pinClickHandler);
+    mapPins[i].addEventListener('keydown', pinPressEnterHandler);
+  }
+}
+/**
+ * The event handler runs the function clearAllActivePins.
+ * Makes the pin active. Adds a card to pin.
+ * Adds event handlers for closing the card - popupCloseClickHandler and popupClosePressEscHandler
+ * @param {object} evt - the event object
+ */
+function pinClickHandler(evt) {
+  clearAllActivePins();
+  evt.currentTarget.classList.add('map__pin--active');
+  var currentAvatar = evt.currentTarget.querySelector('img').getAttribute('src');
+  addCard(rentalUnits, currentAvatar, cardTemplate, pinsPlace);
+  var cardClose = map.querySelector('.popup__close');
+  if (cardClose) {
+    cardClose.addEventListener('click', popupCloseClickHandler);
+    document.addEventListener('keydown', popupClosePressEscHandler);
+  }
+}
+/**
+ * The event handler removes the class .map__pin--active from all pins.
+ */
+function clearAllActivePins() {
+  var mapPins = map.querySelectorAll('.map__pin');
+  for (var i = 0; i < mapPins.length; i++) {
+    if (mapPins[i].classList.contains('map__pin--active')) {
+      mapPins[i].classList.remove('map__pin--active');
+    }
+  }
+}
+/**
+ * The event handler for the activate pin using the enter key.
+ * @param {object} evt - the event object
+ */
+function pinPressEnterHandler(evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    pinClickHandler(evt);
+  }
+}
+/**
+ * The event handler for the activate main pin using the enter key.
+ * @param {object} evt - the event object
+ */
+function pinMainPressEnterHandler(evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    pinMainMouseupHandler(evt);
+  }
+}
+/**
+ * The event handler for the close popup using the esc key.
+ * @param {object} evt - the event object
+ */
+function popupClosePressEscHandler(evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    popupCloseClickHandler();
+  }
+}
+/**
+ * The event handler for the close popup using mouse click.
+ */
+function popupCloseClickHandler() {
+  clearAllActivePins();
+  map.querySelector('.popup').remove();
+}
+/**
+ * Adds or removes the disabled attribute from all fieldset.
+ * @param {boolean} flag - If true then add disabled, if false then remove disabled.
+ */
+function enableDisableFieldset(flag) {
+  var fieldsSet = document.querySelectorAll('fieldset');
+  for (var i = 0; i < fieldsSet.length; i++) {
+    fieldsSet[i].disabled = flag;
+  }
+}
+
+
