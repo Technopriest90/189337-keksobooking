@@ -10,11 +10,7 @@ var map = document.querySelector('.map');
 var pinsTemplate = document.querySelector('template').content.querySelector('.map__pin');
 var pinsPlace = map.querySelector('.map__pins');
 var cardTemplate = document.querySelector('template').content.querySelector('.map__card');
-
 var rentalUnits = generateRentalUnits(AVATARS_NUMBERS, TITLES, TYPES, TIMES, FEATURES, NUMBER_OF_RENTAL_UNIT);
-map.classList.remove('map--faded');
-addPinsToMap(rentalUnits, pinsTemplate, pinsPlace);
-addCards(rentalUnits, cardTemplate, map);
 
 /**
  * Gets a random nonreapeating element from an array
@@ -24,6 +20,7 @@ addCards(rentalUnits, cardTemplate, map);
 function getNonrepeatingRandomValue(array) {
   return array.splice(Math.floor(Math.random() * array.length), 1);
 }
+
 /**
  * Gets a random element from an array
  * @param {array} array - Group of elements to produce a random from them.
@@ -32,6 +29,7 @@ function getNonrepeatingRandomValue(array) {
 function getRandomValue(array) {
   return array[Math.floor(Math.random() * array.length)];
 }
+
 /**
  * Gets a random number from the range includes extreme values
  * @param {number} min - The minimum value of the range.
@@ -41,6 +39,7 @@ function getRandomValue(array) {
 function getRandomNumber(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
 /**
  * Gets a random subarray from an array.
  * @param {array} array - Group of elements to extract the subarray.
@@ -54,6 +53,7 @@ function getRandomArray(array) {
   }
   return newArr;
 }
+
 /**
  * Creates an array of rental units based on the obtained data.
  * @param {array} avatars - An array of references to avatar sellers.
@@ -91,6 +91,7 @@ function generateRentalUnits(avatars, titles, types, times, features, number) {
   }
   return objects;
 }
+
 /**
  * Generates a pin.
  * @param {object} rentalUnit - Information about the rental apartment.
@@ -104,6 +105,7 @@ function renderPin(rentalUnit, pinTemplate) {
   pin.querySelector('img').setAttribute('src', rentalUnit.author.avatar);
   return pin;
 }
+
 /**
  * Add pins to map.
  * @param {object} rental - Information about the rental apartment.
@@ -117,6 +119,7 @@ function addPinsToMap(rental, pinTemplate, pinPlace) {
   }
   pinPlace.appendChild(temp);
 }
+
 /**
  * Translates type rental apartments.
  * @param {string} string - Type rental apartments in English.
@@ -133,6 +136,7 @@ function translateType(string) {
     return 'undefined';
   }
 }
+
 /**
  * Adds to markup tags <li> with classes from array.
  * @param {array} array - Array with classes.
@@ -145,6 +149,7 @@ function addLiFromArray(array, place) {
     place.appendChild(newLi);
   }
 }
+
 /**
  * Removes all children of parent in DOM.
  * @param {object} place - Parent in DOM.
@@ -154,6 +159,7 @@ function clearChildren(place) {
     place.children[0].remove();
   }
 }
+
 /**
  * Gets a string on the number of guests and rooms for them.
  * @param {number} rooms - Number of rooms.
@@ -171,6 +177,7 @@ function getStringRoomsGuests(rooms, guests) {
   var wordGuest = (guests === 1) ? 'гостя' : 'гостей';
   return rooms + ' ' + wordRoom + ' для ' + guests + ' ' + wordGuest;
 }
+
 /**
  * Retrieves the rendering card with the announcement of delivery of apartment.
  * @param {object} rentalUnit - Information about the rental apartment.
@@ -191,16 +198,178 @@ function renderCard(rentalUnit, template) {
   card.querySelector('img').setAttribute('src', rentalUnit.author.avatar);
   return card;
 }
+
 /**
  * Adds cards with information about the rental apartment.
  * @param {object} rental - Information about the rental apartment.
+ * @param {string} avatar - The link to the avatar.
  * @param {object} template - Card template with information on the rental apartment.
  * @param {object} cardPlace - Place in the markup to embed cards.
  */
-function addCards(rental, template, cardPlace) {
-  var temp = document.createDocumentFragment();
-  for (var i = 0; i < rental.length; i++) {
-    temp.appendChild(renderCard(rental[i], template));
+function addCard(rental, avatar, template, cardPlace) {
+  if (cardPlace.querySelector('.popup')) {
+    cardPlace.querySelector('.popup').remove();
   }
-  cardPlace.appendChild(temp);
+  for (var i = 0; i < rental.length; i++) {
+    if (rental[i].author.avatar === avatar) {
+      cardPlace.appendChild(renderCard(rental[i], template));
+    }
+  }
+}
+
+var ESC_KEYCODE = 27;
+var ENTER_KEYCODE = 13;
+var mapPinMain = map.querySelector('.map__pin--main');
+var form = document.querySelector('.notice__form');
+
+enableDisableFieldset(true);
+mapPinMain.addEventListener('mouseup', pinMainMouseupHandler);
+mapPinMain.addEventListener('keydown', pinMainPressEnterHandler);
+/**
+ * The event handler removes the shadow from the map and form.
+ * Activates the form. Adds pins to the map.
+ * And each pin adds event handlers pinClickHandler and pinPressEnterHandler.
+ */
+function pinMainMouseupHandler() {
+  map.classList.remove('map--faded');
+  form.classList.remove('notice__form--disabled');
+  enableDisableFieldset(false);
+  addPinsToMap(rentalUnits, pinsTemplate, pinsPlace);
+  var mapPins = map.querySelectorAll('.map__pin');
+  for (var i = 0; i < mapPins.length; i++) {
+    mapPins[i].addEventListener('click', pinClickHandler);
+    mapPins[i].addEventListener('keydown', pinPressEnterHandler);
+  }
+}
+/**
+ * The event handler runs the function clearAllActivePins.
+ * Makes the pin active. Adds a card to pin.
+ * Adds event handlers for closing the card - popupCloseClickHandler and popupClosePressEscHandler
+ * @param {object} evt - the event object
+ */
+function pinClickHandler(evt) {
+  clearAllActivePins();
+  evt.currentTarget.classList.add('map__pin--active');
+  var currentAvatar = evt.currentTarget.querySelector('img').getAttribute('src');
+  addCard(rentalUnits, currentAvatar, cardTemplate, pinsPlace);
+  var cardClose = map.querySelector('.popup__close');
+  if (cardClose) {
+    cardClose.addEventListener('click', popupCloseClickHandler);
+    document.addEventListener('keydown', popupClosePressEscHandler);
+  }
+}
+/**
+ * The event handler removes the class .map__pin--active from all pins.
+ */
+function clearAllActivePins() {
+  var mapPins = map.querySelectorAll('.map__pin');
+  for (var i = 0; i < mapPins.length; i++) {
+    if (mapPins[i].classList.contains('map__pin--active')) {
+      mapPins[i].classList.remove('map__pin--active');
+    }
+  }
+}
+/**
+ * The event handler for the activate pin using the enter key.
+ * @param {object} evt - the event object
+ */
+function pinPressEnterHandler(evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    pinClickHandler(evt);
+  }
+}
+/**
+ * The event handler for the activate main pin using the enter key.
+ * @param {object} evt - the event object
+ */
+function pinMainPressEnterHandler(evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    pinMainMouseupHandler(evt);
+  }
+}
+/**
+ * The event handler for the close popup using the esc key.
+ * @param {object} evt - the event object
+ */
+function popupClosePressEscHandler(evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    popupCloseClickHandler();
+  }
+}
+/**
+ * The event handler for the close popup using mouse click.
+ */
+function popupCloseClickHandler() {
+  clearAllActivePins();
+  map.querySelector('.popup').remove();
+}
+/**
+ * Adds or removes the disabled attribute from all fieldset.
+ * @param {boolean} flag - If true then add disabled, if false then remove disabled.
+ */
+function enableDisableFieldset(flag) {
+  var fieldsSet = document.querySelectorAll('fieldset');
+  for (var i = 0; i < fieldsSet.length; i++) {
+    fieldsSet[i].disabled = flag;
+  }
+}
+
+var timein = document.querySelector('#timein');
+var timeout = document.querySelector('#timeout');
+var type = document.querySelector('#type');
+var price = document.querySelector('#price');
+var roomNumber = document.querySelector('#room_number');
+var capacity = document.querySelector('#capacity');
+
+timein.addEventListener('change', selectChangeHandler);
+timeout.addEventListener('change', selectChangeHandler);
+price.addEventListener('change', typeChangeHandler);
+roomNumber.addEventListener('change', roomNumberChangeHandler);
+/**
+ * Event handler binds the fields timein and timeout.
+ * @param {object} evt - the event object
+ */
+function selectChangeHandler(evt) {
+  if (evt.currentTarget === timein) {
+    timeout.selectedIndex = timein.selectedIndex;
+  } else if (evt.currentTarget === timeout) {
+    timein.selectedIndex = timeout.selectedIndex;
+  }
+}
+/**
+ * Event handler binds the fields type and price.
+ * @param {object} evt - the event object
+ */
+function typeChangeHandler(evt) {
+  var value = +evt.currentTarget.value;
+  if (value < 1000) {
+    type.selectedIndex = 1;
+  } else if (value >= 1000 && value < 5000) {
+    type.selectedIndex = 0;
+  } else if (value >= 5000 && value < 10000) {
+    type.selectedIndex = 2;
+  } else if (value >= 10000) {
+    type.selectedIndex = 3;
+  }
+}
+/**
+ * Event handler binds the fields room number and capacity.
+ * @param {object} evt - the event object
+ */
+function roomNumberChangeHandler(evt) {
+  var number = evt.currentTarget.selectedIndex;
+  switch (number) {
+    case 0 :
+      capacity.selectedIndex = 2;
+      break;
+    case 1:
+      capacity.selectedIndex = 1;
+      break;
+    case 2:
+      capacity.selectedIndex = 0;
+      break;
+    default :
+      capacity.selectedIndex = 3;
+      break;
+  }
 }
