@@ -354,7 +354,7 @@ function typeChangeHandler(evt) {
 }
 /**
  * Event handler binds the fields room number and capacity.
- * @param {object} evt - the event object
+ * @param {object} evt - the event object.
  */
 function roomNumberChangeHandler(evt) {
   var number = evt.currentTarget.selectedIndex;
