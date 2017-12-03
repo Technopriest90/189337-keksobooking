@@ -17,5 +17,5 @@
     NUMBER_OF_RENTAL_UNIT: 8,
     ESC_KEYCODE: 27,
     ENTER_KEYCODE: 13
-  }
+  };
 })();
