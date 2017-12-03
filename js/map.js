@@ -225,6 +225,7 @@ var form = document.querySelector('.notice__form');
 enableDisableFieldset(true);
 mapPinMain.addEventListener('mouseup', pinMainMouseupHandler);
 mapPinMain.addEventListener('keydown', pinMainPressEnterHandler);
+
 /**
  * The event handler removes the shadow from the map and form.
  * Activates the form. Adds pins to the map.
@@ -241,14 +242,15 @@ function pinMainMouseupHandler() {
     mapPins[i].addEventListener('keydown', pinPressEnterHandler);
   }
 }
+
 /**
- * The event handler runs the function clearAllActivePins.
+ * The event handler runs the function clearActivePin.
  * Makes the pin active. Adds a card to pin.
  * Adds event handlers for closing the card - popupCloseClickHandler and popupClosePressEscHandler
  * @param {object} evt - the event object
  */
 function pinClickHandler(evt) {
-  clearAllActivePins();
+  clearActivePin();
   evt.currentTarget.classList.add('map__pin--active');
   var currentAvatar = evt.currentTarget.querySelector('img').getAttribute('src');
   addCard(rentalUnits, currentAvatar, cardTemplate, pinsPlace);
@@ -258,17 +260,17 @@ function pinClickHandler(evt) {
     document.addEventListener('keydown', popupClosePressEscHandler);
   }
 }
+
 /**
- * The event handler removes the class .map__pin--active from all pins.
+ * The event handler removes the class .map__pin--active from active pin.
  */
-function clearAllActivePins() {
-  var mapPins = map.querySelectorAll('.map__pin');
-  for (var i = 0; i < mapPins.length; i++) {
-    if (mapPins[i].classList.contains('map__pin--active')) {
-      mapPins[i].classList.remove('map__pin--active');
-    }
+function clearActivePin() {
+  var activePin = map.querySelector('.map__pin--active');
+  if (activePin) {
+    activePin.classList.remove('map__pin--active');
   }
 }
+
 /**
  * The event handler for the activate pin using the enter key.
  * @param {object} evt - the event object
@@ -278,6 +280,7 @@ function pinPressEnterHandler(evt) {
     pinClickHandler(evt);
   }
 }
+
 /**
  * The event handler for the activate main pin using the enter key.
  * @param {object} evt - the event object
@@ -287,6 +290,7 @@ function pinMainPressEnterHandler(evt) {
     pinMainMouseupHandler(evt);
   }
 }
+
 /**
  * The event handler for the close popup using the esc key.
  * @param {object} evt - the event object
@@ -296,13 +300,15 @@ function popupClosePressEscHandler(evt) {
     popupCloseClickHandler();
   }
 }
+
 /**
  * The event handler for the close popup using mouse click.
  */
 function popupCloseClickHandler() {
-  clearAllActivePins();
+  clearActivePin();
   map.querySelector('.popup').remove();
 }
+
 /**
  * Adds or removes the disabled attribute from all fieldset.
  * @param {boolean} flag - If true then add disabled, if false then remove disabled.
@@ -323,8 +329,9 @@ var capacity = document.querySelector('#capacity');
 
 timein.addEventListener('change', selectChangeHandler);
 timeout.addEventListener('change', selectChangeHandler);
-price.addEventListener('change', typeChangeHandler);
+price.addEventListener('input', typeChangeHandler);
 roomNumber.addEventListener('change', roomNumberChangeHandler);
+
 /**
  * Event handler binds the fields timein and timeout.
  * @param {object} evt - the event object
@@ -336,6 +343,7 @@ function selectChangeHandler(evt) {
     timein.selectedIndex = timeout.selectedIndex;
   }
 }
+
 /**
  * Event handler binds the fields type and price.
  * @param {object} evt - the event object
@@ -352,6 +360,7 @@ function typeChangeHandler(evt) {
     type.selectedIndex = 3;
   }
 }
+
 /**
  * Event handler binds the fields room number and capacity.
  * @param {object} evt - the event object.
