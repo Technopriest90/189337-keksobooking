@@ -16,6 +16,7 @@
   function generateRentalUnits(avatars, titles, types, times, features, number) {
     var objects = new Array(number);
     for (var i = 0; i < number; i++) {
+      var heightToTail = 38;
       var locationX = window.util.getRandomNumber(300, 900);
       var locationY = window.util.getRandomNumber(100, 500);
       var rooms = window.util.getRandomNumber(1, 5);
@@ -35,7 +36,7 @@
           description: '',
           photos: []
         },
-        location: {x: locationX, y: locationY}
+        location: {x: locationX, y: locationY + heightToTail}
       };
     }
     return objects;
