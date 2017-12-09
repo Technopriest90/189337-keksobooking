@@ -13,7 +13,7 @@
       element.addEventListener('mouseup', pinMainMouseupHandler);
       element.addEventListener('keydown', pinMainPressEnterHandler);
     },
-    enableDisableFieldset: enableDisableFieldset
+    disableFieldset: disableFieldset
   };
 
 
@@ -53,7 +53,7 @@
   function pinMainMouseupHandler() {
     map.classList.remove('map--faded');
     form.classList.remove('notice__form--disabled');
-    enableDisableFieldset(false);
+    disableFieldset(false);
     addPinsToMap(window.rentalUnits, pinsTemplate, pinsPlace);
     mapPinMain.removeEventListener('mouseup', pinMainMouseupHandler);
     mapPinMain.removeEventListener('keydown', pinMainPressEnterHandler);
@@ -113,7 +113,7 @@
    * Adds or removes the disabled attribute from all fieldset.
    * @param {boolean} flag - If true then add disabled, if false then remove disabled.
    */
-  function enableDisableFieldset(flag) {
+  function disableFieldset(flag) {
     var fieldsSet = document.querySelectorAll('fieldset');
     for (var i = 0; i < fieldsSet.length; i++) {
       fieldsSet[i].disabled = flag;
@@ -174,42 +174,43 @@
       var heightToTail = pinCircleHeight / 2 + pinTailHeight;
 
       xRestriction(newPosition.x);
-      yRestriction(newPosition.y);
+      yRestriction(newPosition.y, heightToTail);
       addressInput.value = 'x: ' + newPosition.x + ', y: ' + (newPosition.y + heightToTail);
+    }
 
-      /**
-       * The function sets limit movement of the main pin on the X-axis.
-       * @param {number} positionX - Coordinate position of the pin along the X-axis.
-       */
-      function xRestriction(positionX) {
-        var pinCircleWidth = mapPinMain.querySelector('img').offsetWidth + 20;
-        var rightRestriction = 1200;
-        var leftRestriction = 0;
+    /**
+     * The function sets limit movement of the main pin on the X-axis.
+     * @param {number} positionX - Coordinate position of the pin along the X-axis.
+     */
+    function xRestriction(positionX) {
+      var pinCircleWidth = mapPinMain.querySelector('img').offsetWidth + 20;
+      var rightRestriction = 1200;
+      var leftRestriction = 0;
 
-        if (positionX < (leftRestriction + (pinCircleWidth / 2))) {
-          mapPinMain.style.left = (leftRestriction + (pinCircleWidth / 2)) + 'px';
-        } else if (positionX > (rightRestriction - (pinCircleWidth / 2))) {
-          mapPinMain.style.left = (rightRestriction - (pinCircleWidth / 2)) + 'px';
-        } else {
-          mapPinMain.style.left = positionX + 'px';
-        }
+      if (positionX < (leftRestriction + (pinCircleWidth / 2))) {
+        mapPinMain.style.left = (leftRestriction + (pinCircleWidth / 2)) + 'px';
+      } else if (positionX > (rightRestriction - (pinCircleWidth / 2))) {
+        mapPinMain.style.left = (rightRestriction - (pinCircleWidth / 2)) + 'px';
+      } else {
+        mapPinMain.style.left = positionX + 'px';
       }
+    }
 
-      /**
-       * The function sets limit movement of the main pin on the Y-axis.
-       * @param {number} positionY - Coordinate position of the pin along the Y-axis.
-       */
-      function yRestriction(positionY) {
-        var upperRestriction = 200;
-        var lowerRestriction = 700;
+    /**
+     * The function sets limit movement of the main pin on the Y-axis.
+     * @param {number} positionY - Coordinate position of the pin along the Y-axis.
+     * @param {number} heightToTail - The distance between the center pin and the tip of the tail.
+     */
+    function yRestriction(positionY, heightToTail) {
+      var upperRestriction = 200;
+      var lowerRestriction = 700;
 
-        if (positionY < (upperRestriction - heightToTail)) {
-          mapPinMain.style.top = (upperRestriction - heightToTail) + 'px';
-        } else if (positionY > (lowerRestriction - heightToTail)) {
-          mapPinMain.style.top = (lowerRestriction - heightToTail) + 'px';
-        } else {
-          mapPinMain.style.top = positionY + 'px';
-        }
+      if (positionY < (upperRestriction - heightToTail)) {
+        mapPinMain.style.top = (upperRestriction - heightToTail) + 'px';
+      } else if (positionY > (lowerRestriction - heightToTail)) {
+        mapPinMain.style.top = (lowerRestriction - heightToTail) + 'px';
+      } else {
+        mapPinMain.style.top = positionY + 'px';
       }
     }
 

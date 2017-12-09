@@ -3,23 +3,6 @@
 (function () {
   window.addCard = addCard;
   /**
-   * Translates type rental apartments.
-   * @param {string} string - Type rental apartments in English.
-   * @return {string} - Returns the type of the rental apartments in the Russian language.
-   */
-  function translateType(string) {
-    if (string === 'flat') {
-      return 'Квартира';
-    } else if (string === 'bungalo') {
-      return 'Бунгало';
-    } else if (string === 'house') {
-      return 'Дом';
-    } else {
-      return 'undefined';
-    }
-  }
-
-  /**
    * Adds to markup tags <li> with classes from array.
    * @param {array} array - Array with classes.
    * @param {object} place - Place in the markup to add tags.
@@ -71,7 +54,7 @@
     card.querySelector('h3').textContent = rentalUnit.offer.title;
     card.querySelector('small').textContent = rentalUnit.offer.address;
     card.querySelector('.popup__price').textContent = rentalUnit.offer.price + ' ₽ / ночь';
-    card.querySelector('h4').textContent = translateType(rentalUnit.offer.type);
+    card.querySelector('h4').textContent = window.constants.TYPE[rentalUnit.offer.type];
     card.querySelector('h4').nextElementSibling.textContent = getStringRoomsGuests(rentalUnit.offer.rooms, rentalUnit.offer.guests);
     card.querySelector('.popup__features').previousElementSibling.textContent = 'Заезд после ' + rentalUnit.offer.checkin + ', выезд до ' + rentalUnit.offer.checkout;
     clearChildren(card.querySelector('.popup__features'));
