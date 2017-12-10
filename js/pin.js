@@ -75,7 +75,7 @@
     clearActivePin();
     evt.currentTarget.classList.add('map__pin--active');
     var currentAvatar = evt.currentTarget.querySelector('img').getAttribute('src');
-    window.addCard(window.rentalUnits, currentAvatar, cardTemplate, pinsPlace);
+    window.showCard(window.rentalUnits, currentAvatar, cardTemplate, pinsPlace);
     var cardClose = map.querySelector('.popup__close');
     if (cardClose) {
       cardClose.addEventListener('click', popupCloseClickHandler);
