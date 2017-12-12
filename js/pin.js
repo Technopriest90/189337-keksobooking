@@ -37,12 +37,21 @@
    * @param {object} pinTemplate - The template of pin.
    * @param {object} pinPlace - Place to add a pin.
    */
-  function addPinsToMap(rental, pinTemplate, pinPlace) {
+  function addPinsToMap(rental) {
     var temp = document.createDocumentFragment();
     for (var i = 0; i < rental.length; i++) {
-      temp.appendChild(renderPin(rental[i], pinTemplate));
+      temp.appendChild(renderPin(rental[i], pinsTemplate));
     }
-    pinPlace.appendChild(temp);
+    pinsPlace.appendChild(temp);
+    window.constants.RENTAL_UNITS = rental;
+    mapPinMain.removeEventListener('mouseup', pinMainMouseupHandler);
+    mapPinMain.removeEventListener('keydown', pinMainPressEnterHandler);
+    mapPinMain.addEventListener('mousedown', mapPinMainMousedownHandler);
+    var mapPins = map.querySelectorAll('.map__pin');
+    for (var j = 0; j < mapPins.length; j++) {
+      mapPins[j].addEventListener('click', pinClickHandler);
+      mapPins[j].addEventListener('keydown', pinPressEnterHandler);
+    }
   }
 
   /**
@@ -54,15 +63,7 @@
     map.classList.remove('map--faded');
     form.classList.remove('notice__form--disabled');
     disableFieldset(false);
-    addPinsToMap(window.rentalUnits, pinsTemplate, pinsPlace);
-    mapPinMain.removeEventListener('mouseup', pinMainMouseupHandler);
-    mapPinMain.removeEventListener('keydown', pinMainPressEnterHandler);
-    mapPinMain.addEventListener('mousedown', mapPinMainMousedownHandler);
-    var mapPins = map.querySelectorAll('.map__pin');
-    for (var i = 0; i < mapPins.length; i++) {
-      mapPins[i].addEventListener('click', pinClickHandler);
-      mapPins[i].addEventListener('keydown', pinPressEnterHandler);
-    }
+    window.backend.load(addPinsToMap, window.backend.errorHandler);
   }
 
   /**
@@ -75,7 +76,7 @@
     clearActivePin();
     evt.currentTarget.classList.add('map__pin--active');
     var currentAvatar = evt.currentTarget.querySelector('img').getAttribute('src');
-    window.showCard(window.rentalUnits, currentAvatar, cardTemplate, pinsPlace);
+    window.showCard(window.constants.RENTAL_UNITS, currentAvatar, cardTemplate, pinsPlace);
     var cardClose = map.querySelector('.popup__close');
     if (cardClose) {
       cardClose.addEventListener('click', popupCloseClickHandler);
