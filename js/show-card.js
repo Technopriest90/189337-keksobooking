@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  window.addCard = addCard;
+  window.showCard = showCard;
   /**
    * Adds to markup tags <li> with classes from array.
    * @param {array} array - Array with classes.
@@ -71,7 +71,7 @@
    * @param {object} template - Card template with information on the rental apartment.
    * @param {object} cardPlace - Place in the markup to embed cards.
    */
-  function addCard(rental, avatar, template, cardPlace) {
+  function showCard(rental, avatar, template, cardPlace) {
     if (cardPlace.querySelector('.popup')) {
       cardPlace.querySelector('.popup').remove();
     }

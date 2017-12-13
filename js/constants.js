@@ -23,6 +23,9 @@
     FEATURES: ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'],
     NUMBER_OF_RENTAL_UNIT: 8,
     ESC_KEYCODE: 27,
-    ENTER_KEYCODE: 13
+    ENTER_KEYCODE: 13,
+    SERVER_URL_GET: 'https://1510.dump.academy/keksobooking/data',
+    SERVER_URL_POST: 'https://1510.dump.academy/keksobooking',
+    RENTAL_UNITS: null
   };
 })();
