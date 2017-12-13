@@ -15,6 +15,10 @@
   window.sync.synchronizeFields(roomNumber, capacity, ['1', '2', '3', '100'], ['1', '2', '3', '0'], window.sync.syncValues);
   form.addEventListener('submit', formSubmitHandler);
 
+  /**
+   * Handler for form submission.
+   * @param {object} evt - the event object.
+   */
   function formSubmitHandler(evt) {
     evt.preventDefault();
     window.backend.save(new FormData(form), function () {

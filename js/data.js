@@ -14,7 +14,7 @@
    * @return {array} objects - Returns an array of rental units.
    */
   function generateRentalUnits(avatars, titles, types, times, features, number) {
-    var objects = new Array(number);
+    var objects = [];
     for (var i = 0; i < number; i++) {
       var locationX = window.util.getRandomNumber(300, 900);
       var locationY = window.util.getRandomNumber(100, 500);
