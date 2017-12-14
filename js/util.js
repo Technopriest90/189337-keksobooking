@@ -10,7 +10,6 @@
     getNonrepeatingRandomValue: function (array) {
       return array.splice(Math.floor(Math.random() * array.length), 1);
     },
-
     /**
      * Gets a random element from an array
      * @param {array} array - Group of elements to produce a random from them.
@@ -19,7 +18,6 @@
     getRandomValue: function (array) {
       return array[Math.floor(Math.random() * array.length)];
     },
-
     /**
      * Gets a random number from the range includes extreme values
      * @param {number} min - The minimum value of the range.
@@ -29,7 +27,6 @@
     getRandomNumber: function (min, max) {
       return Math.floor(Math.random() * (max - min + 1)) + min;
     },
-
     /**
      * Gets a random subarray from an array.
      * @param {array} array - Group of elements to extract the subarray.
