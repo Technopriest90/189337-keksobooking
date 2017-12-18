@@ -9,16 +9,31 @@
   var cardTemplate = document.querySelector('template').content.querySelector('.map__card');
 
   window.pin = {
+
+    /**
+     * Adds event handlers by clicking on the main pin.
+     * @param {object} element - Link to the main pin.
+     */
     pinMainAddHandlers: function (element) {
       element.addEventListener('mouseup', pinMainMouseupHandler);
       element.addEventListener('keydown', pinMainPressEnterHandler);
     },
-    disableFieldset: disableFieldset
+
+    /**
+     * Adds or removes the disabled attribute from all fieldset.
+     * @param {boolean} flag - If true then add disabled, if false then remove disabled.
+     */
+    disableFieldset: function disableFieldset(flag) {
+      var fieldsSet = document.querySelectorAll('fieldset');
+      for (var i = 0; i < fieldsSet.length; i++) {
+        fieldsSet[i].disabled = flag;
+      }
+    }
   };
 
 
   /**
-   * Generates a pin.
+   * Render a pin.
    * @param {object} rentalUnit - Information about the rental apartment.
    * @param {object} pinTemplate - The template of pin.
    * @return {object} pin - Returns render pin.
@@ -34,8 +49,6 @@
   /**
    * Add pins to map.
    * @param {object} rental - Information about the rental apartment.
-   * @param {object} pinTemplate - The template of pin.
-   * @param {object} pinPlace - Place to add a pin.
    */
   function addPinsToMap(rental) {
     var temp = document.createDocumentFragment();
@@ -62,7 +75,7 @@
   function pinMainMouseupHandler() {
     map.classList.remove('map--faded');
     form.classList.remove('notice__form--disabled');
-    disableFieldset(false);
+    window.pin.disableFieldset(false);
     window.backend.load(addPinsToMap, window.backend.errorHandler);
   }
 
@@ -108,17 +121,6 @@
    */
   function pinMainPressEnterHandler(evt) {
     window.util.isEnterPress(evt, pinMainMouseupHandler);
-  }
-
-  /**
-   * Adds or removes the disabled attribute from all fieldset.
-   * @param {boolean} flag - If true then add disabled, if false then remove disabled.
-   */
-  function disableFieldset(flag) {
-    var fieldsSet = document.querySelectorAll('fieldset');
-    for (var i = 0; i < fieldsSet.length; i++) {
-      fieldsSet[i].disabled = flag;
-    }
   }
 
   /**

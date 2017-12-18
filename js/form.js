@@ -9,10 +9,26 @@
   var capacity = document.querySelector('#capacity');
   var form = document.querySelector('.notice__form');
 
-  window.sync.synchronizeFields(timein, timeout, window.constants.TIMES, window.constants.TIMES, window.sync.syncValues);
-  window.sync.synchronizeFields(timeout, timein, window.constants.TIMES, window.constants.TIMES, window.sync.syncValues);
-  window.sync.synchronizeFields(type, price, ['bungalo', 'flat', 'house', 'palace'], [0, 1000, 5000, 10000], window.sync.syncValueWithMin);
-  window.sync.synchronizeFields(roomNumber, capacity, ['1', '2', '3', '100'], ['1', '2', '3', '0'], window.sync.syncValues);
+  window.sync.synchronizeFields(
+      timein, timeout,
+      window.constants.TIMES, window.constants.TIMES,
+      window.sync.syncValues);
+
+  window.sync.synchronizeFields(
+      timeout, timein,
+      window.constants.TIMES, window.constants.TIMES,
+      window.sync.syncValues);
+
+  window.sync.synchronizeFields(
+      type, price,
+      window.constants.TYPES, window.constants.PRICES,
+      window.sync.syncValueWithMin);
+
+  window.sync.synchronizeFields(
+      roomNumber, capacity,
+      window.constants.ROOMS, window.constants.CAPACITY,
+      window.sync.syncValues);
+
   form.addEventListener('submit', formSubmitHandler);
 
   /**
