@@ -28,9 +28,60 @@
       for (var i = 0; i < fieldsSet.length; i++) {
         fieldsSet[i].disabled = flag;
       }
+    },
+
+    updatePins: function () {
+      addPinsToMap(window.constants.RENTAL_UNITS.slice(1).sort(pinsSortingCallback).filter(pinsFilterCallback));
     }
   };
 
+  function loadHandler(data) {
+    window.constants.RENTAL_UNITS = data;
+    addPinsToMap(data);
+  }
+
+  function pinsFilterCallback(rentalUnit, i, array) {
+    return getWeight(array[0]) === getWeight(rentalUnit);
+  }
+
+  function pinsSortingCallback(left, right) {
+    var diffRank = getWeight(right) - getWeight(left);
+
+    return diffRank;
+  }
+
+  function getWeight(rentalUnit) {
+    var weight = 0;
+    var type = document.querySelector('#housing-type');
+    var rooms = document.querySelector('#housing-rooms');
+    var guests = document.querySelector('#housing-guests');
+    var prices = document.querySelector('#housing-price');
+    if (rentalUnit.offer.type === type.value) {
+      weight += 1;
+    }
+    if (rentalUnit.offer.rooms === +rooms.value) {
+      weight += 1;
+    }
+    if (rentalUnit.offer.guests === +guests.value) {
+      weight += 1;
+    }
+    if (getPriceStatus(rentalUnit.offer.price, prices.value)) {
+      weight += 1;
+    }
+    return weight;
+  }
+
+  function getPriceStatus(price, status) {
+    if (status === 'low' && price < window.constants.PRICES_FILTER.low) {
+      return true;
+    } else if (status === 'middle' && price > window.constants.PRICES_FILTER.middle[0] && price < window.constants.PRICES_FILTER.middle[1]) {
+      return true;
+    } else if (status === 'high' && price > window.constants.PRICES_FILTER.high) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   /**
    * Render a pin.
@@ -51,12 +102,13 @@
    * @param {object} rental - Information about the rental apartment.
    */
   function addPinsToMap(rental) {
+    window.util.clearChildren(pinsPlace);
+    pinsPlace.appendChild(mapPinMain).cloneNode(true);
     var temp = document.createDocumentFragment();
     for (var i = 0; i < rental.length; i++) {
       temp.appendChild(renderPin(rental[i], pinsTemplate));
     }
     pinsPlace.appendChild(temp);
-    window.constants.RENTAL_UNITS = rental;
     mapPinMain.removeEventListener('mouseup', pinMainMouseupHandler);
     mapPinMain.removeEventListener('keydown', pinMainPressEnterHandler);
     mapPinMain.addEventListener('mousedown', mapPinMainMousedownHandler);
@@ -76,7 +128,7 @@
     map.classList.remove('map--faded');
     form.classList.remove('notice__form--disabled');
     window.pin.disableFieldset(false);
-    window.backend.load(addPinsToMap, window.backend.errorHandler);
+    window.backend.load(loadHandler, window.backend.errorHandler);
   }
 
   /**
@@ -88,8 +140,8 @@
   function pinClickHandler(evt) {
     clearActivePin();
     evt.currentTarget.classList.add('map__pin--active');
-    var currentAvatar = evt.currentTarget.querySelector('img').getAttribute('src');
-    window.showCard(window.constants.RENTAL_UNITS, currentAvatar, cardTemplate, pinsPlace);
+    var locationX = parseInt(evt.currentTarget.style.left, 10);
+    window.showCard(window.constants.RENTAL_UNITS, locationX, cardTemplate, pinsPlace);
     var cardClose = map.querySelector('.popup__close');
     if (cardClose) {
       cardClose.addEventListener('click', popupCloseClickHandler);

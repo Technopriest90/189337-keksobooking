@@ -4,16 +4,16 @@
   /**
    * Adds cards with information about the rental apartment.
    * @param {object} rental - Information about the rental apartment.
-   * @param {string} avatar - The link to the avatar.
+   * @param {string} locationX - The coordinates on the x-axis.
    * @param {object} template - Card template with information on the rental apartment.
    * @param {object} cardPlace - Place in the markup to embed cards.
    */
-  window.showCard = function (rental, avatar, template, cardPlace) {
+  window.showCard = function (rental, locationX, template, cardPlace) {
     if (cardPlace.querySelector('.popup')) {
       cardPlace.querySelector('.popup').remove();
     }
     for (var i = 0; i < rental.length; i++) {
-      if (rental[i].author.avatar === avatar) {
+      if (rental[i].location.x === locationX) {
         cardPlace.appendChild(renderCard(rental[i], template));
         break;
       }
@@ -30,16 +30,6 @@
       var newLi = document.createElement('li');
       newLi.className = 'feature feature--' + array[i];
       place.appendChild(newLi);
-    }
-  }
-
-  /**
-   * Removes all children of parent in DOM.
-   * @param {object} place - Parent in DOM.
-   */
-  function clearChildren(place) {
-    while (place.children.length !== 0) {
-      place.children[0].remove();
     }
   }
 
@@ -75,7 +65,7 @@
     card.querySelector('h4').textContent = window.constants.TYPE[rentalUnit.offer.type];
     card.querySelector('h4').nextElementSibling.textContent = getStringRoomsGuests(rentalUnit.offer.rooms, rentalUnit.offer.guests);
     card.querySelector('.popup__features').previousElementSibling.textContent = 'Заезд после ' + rentalUnit.offer.checkin + ', выезд до ' + rentalUnit.offer.checkout;
-    clearChildren(card.querySelector('.popup__features'));
+    window.util.clearChildren(card.querySelector('.popup__features'));
     addLiFromArray(rentalUnit.offer.features, card.querySelector('.popup__features'));
     card.querySelector('.popup__features').nextElementSibling.textContent = rentalUnit.offer.description;
     card.querySelector('img').setAttribute('src', rentalUnit.author.avatar);

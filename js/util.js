@@ -59,8 +59,16 @@
       if (evt.keyCode === window.constants.ENTER_KEYCODE) {
         action();
       }
+    },
+    /**
+     * Removes all children of parent in DOM.
+     * @param {object} place - Parent in DOM.
+     */
+    clearChildren: function (place) {
+      while (place.children.length !== 0) {
+        place.children[0].remove();
+      }
     }
-
   };
 })();
 
