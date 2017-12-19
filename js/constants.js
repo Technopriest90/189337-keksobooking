@@ -34,6 +34,7 @@
     ENTER_KEYCODE: 13,
     SERVER_URL_GET: 'https://1510.dump.academy/keksobooking/data',
     SERVER_URL_POST: 'https://1510.dump.academy/keksobooking',
-    RENTAL_UNITS: null
+    RENTAL_UNITS: null,
+    DEBOUNCE_INTERVAL: 500
   };
 })();
