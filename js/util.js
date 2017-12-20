@@ -59,8 +59,32 @@
       if (evt.keyCode === window.constants.ENTER_KEYCODE) {
         action();
       }
-    }
+    },
+    /**
+     * Removes all children of parent in DOM.
+     * @param {object} place - Parent in DOM.
+     */
+    clearChildren: function (place) {
+      while (place.children.length !== 0) {
+        place.children[0].remove();
+      }
+    },
 
+    lastTimeout: null,
+
+    /**
+     * Eliminates extra clicks for the filter.
+     * @param {function} action - Event on change of filter field.
+     * @return {function} - Debounce function.
+     */
+    debounce: function (action) {
+      return function () {
+        if (window.util.lastTimeout) {
+          window.clearTimeout(window.util.lastTimeout);
+        }
+        window.util.lastTimeout = window.setTimeout(action, window.constants.DEBOUNCE_INTERVAL);
+      };
+    }
   };
 })();
 

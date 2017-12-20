@@ -9,16 +9,169 @@
   var cardTemplate = document.querySelector('template').content.querySelector('.map__card');
 
   window.pin = {
+
+    /**
+     * Adds event handlers by clicking on the main pin.
+     * @param {object} element - Link to the main pin.
+     */
     pinMainAddHandlers: function (element) {
       element.addEventListener('mouseup', pinMainMouseupHandler);
       element.addEventListener('keydown', pinMainPressEnterHandler);
     },
-    disableFieldset: disableFieldset
+
+    /**
+     * Adds or removes the disabled attribute from all fieldset.
+     * @param {boolean} flag - If true then add disabled, if false then remove disabled.
+     */
+    disableFieldset: function disableFieldset(flag) {
+      var fieldsSet = document.querySelectorAll('fieldset');
+      for (var i = 0; i < fieldsSet.length; i++) {
+        fieldsSet[i].disabled = flag;
+      }
+    },
+    /**
+     * Updates the pins on the map.
+     */
+    updatePins: function () {
+      addPinsToMap(window.constants.RENTAL_UNITS.slice(1).sort(pinsSortingCallback).filter(pinsFilterCallback), window.constants.NUMBER_OF_RENTAL_UNIT);
+    }
   };
 
+  /**
+   * Handler for the load data of the rental units.
+   * @param {object} data - Data of the rental units.
+   */
+  function loadHandler(data) {
+    window.constants.RENTAL_UNITS = data;
+    addPinsToMap(data);
+  }
 
   /**
-   * Generates a pin.
+   * Function for the filter of rental units.
+   * @param {object} rentalUnit - Left element of in the sorting.
+   * @param {number} i - Formal parameter.
+   * @param {array} array - Original array.
+   * @return {bool} - Value fot filter.
+   */
+  function pinsFilterCallback(rentalUnit, i, array) {
+    return getWeight(array[0]) === getWeight(rentalUnit);
+  }
+
+  /**
+   * The sort function of rental units.
+   * @param {object} left - Left element of in the sorting.
+   * @param {object} right - Right element of in the sorting.
+   * @return {number} diffRank - Value fot sorting.
+   */
+  function pinsSortingCallback(left, right) {
+    var diffRank = getWeight(right) - getWeight(left);
+    return diffRank;
+  }
+
+  /**
+   * Gets the weight of rental unit.
+   * @param {object} rentalUnit - Data of the rental unit.
+   * @return {number} wieght - The weight of rental unit
+   */
+  function getWeight(rentalUnit) {
+    var weight = 0;
+    var type = document.querySelector('#housing-type');
+    var rooms = document.querySelector('#housing-rooms');
+    var guests = document.querySelector('#housing-guests');
+    var prices = document.querySelector('#housing-price');
+
+    var wifi = document.querySelector('#filter-wifi');
+    var dishwasher = document.querySelector('#filter-dishwasher');
+    var parking = document.querySelector('#filter-parking');
+    var washer = document.querySelector('#filter-washer');
+    var elevator = document.querySelector('#filter-elevator');
+    var conditioner = document.querySelector('#filter-conditioner');
+
+    weight += getOfferWeight(rentalUnit.offer.type, type.value);
+    weight += getOfferWeight(rentalUnit.offer.rooms, +rooms.value);
+    weight += getOfferWeight(rentalUnit.offer.guests, +guests.value);
+
+    weight += getPriceStatus(rentalUnit.offer.price, prices.value);
+
+    weight += getOfferFeatureWeight(wifi, rentalUnit);
+    weight += getOfferFeatureWeight(dishwasher, rentalUnit);
+    weight += getOfferFeatureWeight(parking, rentalUnit);
+    weight += getOfferFeatureWeight(washer, rentalUnit);
+    weight += getOfferFeatureWeight(elevator, rentalUnit);
+    weight += getOfferFeatureWeight(conditioner, rentalUnit);
+
+    return weight;
+  }
+
+  /**
+   * Gets the weight for the offer of rental unit.
+   * @param {*} offer - Value of the offer of rental unit.
+   * @param {*} fieldValue - The value of the field filter.
+   * @return {number} - 1 or 0.
+   */
+  function getOfferWeight(offer, fieldValue) {
+    if (offer === fieldValue) {
+      return 1;
+    }
+    return 0;
+  }
+
+  /**
+   * Gets the weight for the feature of rental unit.
+   * @param {object} field - The filter field on check features.
+   * @param {object} rentalUnit - The data of the rental unit.
+   * @return {number} - 1 or 0.
+   */
+  function getOfferFeatureWeight(field, rentalUnit) {
+    if (field.checked && ~rentalUnit.offer.features.indexOf(window.constants.FEATURES[window.constants.FEATURES.indexOf(field.value)])) {
+      return 1;
+    }
+    return 0;
+  }
+
+  /**
+   * Gets the weight for the price of rental unit.
+   * @param {number} price - Price of rental unit.
+   * @param {string} status - The name of the price range.
+   * @return {number} - 1 or 0.
+   */
+  function getPriceStatus(price, status) {
+    if (status === 'low' && price < window.constants.PRICES_FILTER.low) {
+      return 1;
+    } else if (status === 'middle' && price > window.constants.PRICES_FILTER.middle[0] && price < window.constants.PRICES_FILTER.middle[1]) {
+      return 1;
+    } else if (status === 'high' && price > window.constants.PRICES_FILTER.high) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+
+  /**
+   * Checks whether the filter is turned off.
+   * @return {bool} - true is disable, false is enable.
+   */
+  function checkDisableFilter() {
+    var type = document.querySelector('#housing-type');
+    var rooms = document.querySelector('#housing-rooms');
+    var guests = document.querySelector('#housing-guests');
+    var prices = document.querySelector('#housing-price');
+    var wifi = document.querySelector('#filter-wifi');
+    var dishwasher = document.querySelector('#filter-dishwasher');
+    var parking = document.querySelector('#filter-parking');
+    var washer = document.querySelector('#filter-washer');
+    var elevator = document.querySelector('#filter-elevator');
+    var conditioner = document.querySelector('#filter-conditioner');
+
+    if (type.value === 'any' && rooms.value === 'any' && guests.value === 'any' && prices.value === 'any' && !wifi.checked && !dishwasher.checked && !parking.checked && !washer.checked && !elevator.checked && !conditioner.checked) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /**
+   * Render a pin.
    * @param {object} rentalUnit - Information about the rental apartment.
    * @param {object} pinTemplate - The template of pin.
    * @return {object} pin - Returns render pin.
@@ -34,16 +187,22 @@
   /**
    * Add pins to map.
    * @param {object} rental - Information about the rental apartment.
-   * @param {object} pinTemplate - The template of pin.
-   * @param {object} pinPlace - Place to add a pin.
+   * @param {number} count - Count of rental units.
    */
-  function addPinsToMap(rental) {
+  function addPinsToMap(rental, count) {
+    if (checkDisableFilter()) {
+      count = rental.length;
+    } else if (count > rental.length) {
+      count = rental.length;
+    }
+
+    window.util.clearChildren(pinsPlace);
+    pinsPlace.appendChild(mapPinMain).cloneNode(true);
     var temp = document.createDocumentFragment();
-    for (var i = 0; i < rental.length; i++) {
+    for (var i = 0; i < count; i++) {
       temp.appendChild(renderPin(rental[i], pinsTemplate));
     }
     pinsPlace.appendChild(temp);
-    window.constants.RENTAL_UNITS = rental;
     mapPinMain.removeEventListener('mouseup', pinMainMouseupHandler);
     mapPinMain.removeEventListener('keydown', pinMainPressEnterHandler);
     mapPinMain.addEventListener('mousedown', mapPinMainMousedownHandler);
@@ -62,8 +221,8 @@
   function pinMainMouseupHandler() {
     map.classList.remove('map--faded');
     form.classList.remove('notice__form--disabled');
-    disableFieldset(false);
-    window.backend.load(addPinsToMap, window.backend.errorHandler);
+    window.pin.disableFieldset(false);
+    window.backend.load(loadHandler, window.backend.errorHandler);
   }
 
   /**
@@ -75,8 +234,8 @@
   function pinClickHandler(evt) {
     clearActivePin();
     evt.currentTarget.classList.add('map__pin--active');
-    var currentAvatar = evt.currentTarget.querySelector('img').getAttribute('src');
-    window.showCard(window.constants.RENTAL_UNITS, currentAvatar, cardTemplate, pinsPlace);
+    var locationX = parseInt(evt.currentTarget.style.left, 10);
+    window.showCard(window.constants.RENTAL_UNITS, locationX, cardTemplate, pinsPlace);
     var cardClose = map.querySelector('.popup__close');
     if (cardClose) {
       cardClose.addEventListener('click', popupCloseClickHandler);
@@ -108,17 +267,6 @@
    */
   function pinMainPressEnterHandler(evt) {
     window.util.isEnterPress(evt, pinMainMouseupHandler);
-  }
-
-  /**
-   * Adds or removes the disabled attribute from all fieldset.
-   * @param {boolean} flag - If true then add disabled, if false then remove disabled.
-   */
-  function disableFieldset(flag) {
-    var fieldsSet = document.querySelectorAll('fieldset');
-    for (var i = 0; i < fieldsSet.length; i++) {
-      fieldsSet[i].disabled = flag;
-    }
   }
 
   /**
