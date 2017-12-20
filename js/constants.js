@@ -35,6 +35,7 @@
     SERVER_URL_GET: 'https://1510.dump.academy/keksobooking/data',
     SERVER_URL_POST: 'https://1510.dump.academy/keksobooking',
     RENTAL_UNITS: null,
-    DEBOUNCE_INTERVAL: 500
+    DEBOUNCE_INTERVAL: 500,
+    FILES_TYPES: ['png', 'jpg', 'jpeg', 'gif']
   };
 })();
