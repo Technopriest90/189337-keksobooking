@@ -4,20 +4,11 @@
   window.constants = {
     OFFSET_Y: 46,
     OFFSET_X: 5,
-    AVATARS_NUMBERS: ['01', '02', '03', '04', '05', '06', '07', '08'],
     TYPE: {
       flat: 'Квартира',
       bungalo: 'Бунгало',
       house: 'Дом'
     },
-    TITLES: ['Большая уютная квартира',
-      'Маленькая неуютная квартира',
-      'Огромный прекрасный дворец',
-      'Маленький ужасный дворец',
-      'Красивый гостевой домик',
-      'Некрасивый негостеприимный домик',
-      'Уютное бунгало далеко от моря',
-      'Неуютное бунгало по колено в воде'],
     TYPES: ['bungalo', 'flat', 'house', 'palace'],
     PRICES: [0, 1000, 5000, 10000],
     PRICES_FILTER: {
@@ -36,6 +27,21 @@
     SERVER_URL_POST: 'https://1510.dump.academy/keksobooking',
     RENTAL_UNITS: null,
     DEBOUNCE_INTERVAL: 500,
-    FILES_TYPES: ['png', 'jpg', 'jpeg', 'gif']
+    TIMEOUT_TIME: 10000,
+    ERRORMSG_TIME: 2000,
+    CODE_OK: 200,
+    BASE_PIN_COORD: {
+      x: 600,
+      y: 375
+    },
+    RESTRICTION: {
+      top: 200,
+      right: 1200,
+      down: 700,
+      left: 0
+    },
+    PIN_PADDING: 20,
+    FILES_TYPES: ['png', 'jpg', 'jpeg', 'gif'],
+    SCROLL_INTERVAL: 5
   };
 })();

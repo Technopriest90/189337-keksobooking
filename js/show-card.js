@@ -34,6 +34,24 @@
   }
 
   /**
+   * Adds markup tags <li> with images from array.
+   * @param {array} array - Array with classes.
+   * @param {object} place - Place in the markup to add tags.
+   * @param {object} template - The template tag li with image.
+   */
+  function addImgFromArray(array, place, template) {
+    for (var i = 0; i < array.length; i++) {
+      var li = template.cloneNode(true);
+      var image = li.querySelector('img');
+      image.src = array[i];
+      image.width = '70';
+      image.height = '40';
+      place.appendChild(li);
+    }
+    place.children[0].remove();
+  }
+
+  /**
    * Gets a string on the number of guests and rooms for them.
    * @param {number} rooms - Number of rooms.
    * @param {number} guests - Number of guests.
@@ -59,6 +77,7 @@
    */
   function renderCard(rentalUnit, template) {
     var card = template.cloneNode(true);
+    var img = card.querySelector('.popup__pictures');
     card.querySelector('h3').textContent = rentalUnit.offer.title;
     card.querySelector('small').textContent = rentalUnit.offer.address;
     card.querySelector('.popup__price').textContent = rentalUnit.offer.price + ' ₽ / ночь';
@@ -69,6 +88,7 @@
     addLiFromArray(rentalUnit.offer.features, card.querySelector('.popup__features'));
     card.querySelector('.popup__features').nextElementSibling.textContent = rentalUnit.offer.description;
     card.querySelector('img').setAttribute('src', rentalUnit.author.avatar);
+    addImgFromArray(rentalUnit.offer.photos, img, img.children[0]);
     return card;
   }
 })();

@@ -9,7 +9,7 @@
      * @param {array} secondValues - An array with the values of the second field
      * @param {function} action - The action at which contact events.
      */
-    synchronizeFields: function (firstField, secondField, firstValues, secondValues, action) {
+    fields: function (firstField, secondField, firstValues, secondValues, action) {
       firstField.addEventListener('change', function () {
         action(secondField, secondValues[firstValues.indexOf(firstField.value)]);
       });
@@ -19,7 +19,7 @@
      * @param {object} element - The element whose value is changing.
      * @param {*} value - The value assigned to the element.
      */
-    syncValues: function (element, value) {
+    valuesCb: function (element, value) {
       element.value = value;
     },
     /**
@@ -27,7 +27,7 @@
      * @param {object} element - The element whose value is changing.
      * @param {*} value - The value assigned to the element.
      */
-    syncValueWithMin: function (element, value) {
+    valueWithMinCb: function (element, value) {
       element.value = value;
       element.min = value;
     }

@@ -10,7 +10,6 @@
      */
     load: function (onLoad, onError) {
       var xhr = setupXhr(onLoad, onError);
-
       xhr.open('GET', window.constants.SERVER_URL_GET);
       xhr.send();
     },
@@ -23,9 +22,9 @@
      */
     save: function (data, onLoad, onError) {
       var xhr = setupXhr(onLoad, onError);
-
       xhr.open('POST', window.constants.SERVER_URL_POST);
       xhr.send(data);
+
     },
 
     /**
@@ -35,7 +34,7 @@
     errorHandler: function (errorMessage) {
       var errorWindow = document.createElement('div');
       errorWindow.style.zIndex = 100;
-      errorWindow.style.position = 'absolute';
+      errorWindow.style.position = 'fixed';
       errorWindow.style.left = '0';
       errorWindow.style.right = '0';
       errorWindow.style.top = '0';
@@ -43,6 +42,9 @@
       errorWindow.style.backgroundColor = 'white';
       errorWindow.textContent = errorMessage;
       document.body.insertAdjacentElement('afterbegin', errorWindow);
+      setTimeout(function () {
+        document.body.children[0].remove();
+      }, window.constants.ERRORMSG_TIME);
     }
   };
 
@@ -58,7 +60,7 @@
     xhr.responseType = 'json';
 
     xhr.addEventListener('load', function () {
-      if (xhr.status === 200) {
+      if (xhr.status === window.constants.CODE_OK) {
         onLoad(xhr.response);
       } else {
         onError('Неизвестный статус: ' + xhr.status + ' ' + xhr.statusText);
@@ -73,7 +75,7 @@
       onError('Запрос не успел выполниться за ' + xhr.timeout + ' мс');
     });
 
-    xhr.timeout = 2000;
+    xhr.timeout = window.constants.TIMEOUT_TIME;
 
     return xhr;
   }
