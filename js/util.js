@@ -31,6 +31,15 @@
         place.children[0].remove();
       }
     },
+    /**
+     * Removes all node in DOM collection.
+     * @param {object} collection - Collection of DOM nodes.
+     */
+    clearCollection: function (collection) {
+      for (var i = 0; i < collection.length; i++) {
+        collection[i].remove();
+      }
+    },
 
     lastTimeout: null,
 

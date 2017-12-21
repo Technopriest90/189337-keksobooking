@@ -50,6 +50,8 @@
   function formSubmitHandler(evt) {
     evt.preventDefault();
     window.backend.save(new FormData(form), window.pin.siteReset, window.backend.errorHandler);
+    window.util.clearCollection(previewImage.querySelectorAll('img'));
+    previewAvatar.src = 'img/muffin.png';
   }
 
   /**
@@ -103,7 +105,6 @@
   function avatarPreviewCallback(preview, fileStream) {
     return function () {
       preview.src = fileStream.result;
-      preview.width = '40';
     };
   }
 
