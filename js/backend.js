@@ -10,7 +10,6 @@
      */
     load: function (onLoad, onError) {
       var xhr = setupXhr(onLoad, onError);
-
       xhr.open('GET', window.constants.SERVER_URL_GET);
       xhr.send();
     },
@@ -23,9 +22,9 @@
      */
     save: function (data, onLoad, onError) {
       var xhr = setupXhr(onLoad, onError);
-
       xhr.open('POST', window.constants.SERVER_URL_POST);
       xhr.send(data);
+
     },
 
     /**
@@ -35,7 +34,7 @@
     errorHandler: function (errorMessage) {
       var errorWindow = document.createElement('div');
       errorWindow.style.zIndex = 100;
-      errorWindow.style.position = 'absolute';
+      errorWindow.style.position = 'fixed';
       errorWindow.style.left = '0';
       errorWindow.style.right = '0';
       errorWindow.style.top = '0';

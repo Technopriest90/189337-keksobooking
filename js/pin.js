@@ -34,7 +34,9 @@
      * Updates the pins on the map.
      */
     updatePins: function () {
-      addPinsToMap(window.constants.RENTAL_UNITS.slice(1).sort(window.filter.pinsSortingCallback).filter(window.filter.pinsFilterCallback), window.constants.NUMBER_OF_RENTAL_UNIT);
+      if (window.constants.RENTAL_UNITS) {
+        addPinsToMap(window.constants.RENTAL_UNITS.slice(1).sort(window.filter.pinsSortingCallback).filter(window.filter.pinsFilterCallback), window.constants.NUMBER_OF_RENTAL_UNIT);
+      }
     },
     /**
      * Returns the site to its original appearance.
@@ -94,9 +96,6 @@
       temp.appendChild(renderPin(rental[i], pinsTemplate));
     }
     pinsPlace.appendChild(temp);
-    mapPinMain.removeEventListener('mouseup', pinMainMouseupHandler);
-    mapPinMain.removeEventListener('keydown', pinMainPressEnterHandler);
-    mapPinMain.addEventListener('mousedown', mapPinMainMousedownHandler);
     var mapPins = map.querySelectorAll('.map__pin');
     for (var j = 0; j < mapPins.length; j++) {
       mapPins[j].addEventListener('click', pinClickHandler);
@@ -113,6 +112,9 @@
     map.classList.remove('map--faded');
     form.classList.remove('notice__form--disabled');
     window.pin.disableFieldset(false);
+    mapPinMain.removeEventListener('mouseup', pinMainMouseupHandler);
+    mapPinMain.removeEventListener('keydown', pinMainPressEnterHandler);
+    mapPinMain.addEventListener('mousedown', mapPinMainMousedownHandler);
     window.backend.load(loadHandler, window.backend.errorHandler);
   }
 
