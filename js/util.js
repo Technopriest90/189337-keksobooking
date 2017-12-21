@@ -64,11 +64,11 @@
       var scrollTop = document.body.scrollTop || window.pageYOffset;
       var timer = setInterval(function () {
         if (scrollTop > 0) {
-          window.scroll(0, scrollTop -= 5);
+          window.scroll(0, scrollTop -= window.constants.SCROLL_INTERVAL);
         } else {
           clearInterval(timer);
         }
-      }, 5);
+      }, window.constants.SCROLL_INTERVAL);
     }
   };
 })();

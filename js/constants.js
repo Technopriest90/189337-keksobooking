@@ -41,6 +41,7 @@
       left: 0
     },
     PIN_PADDING: 20,
-    FILES_TYPES: ['png', 'jpg', 'jpeg', 'gif']
+    FILES_TYPES: ['png', 'jpg', 'jpeg', 'gif'],
+    SCROLL_INTERVAL: 5
   };
 })();

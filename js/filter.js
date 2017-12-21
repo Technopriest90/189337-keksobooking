@@ -3,6 +3,16 @@
 (function () {
   var mapFilter = document.querySelectorAll('.map__filter');
   var mapFilterCheckbox = document.querySelectorAll('input[name=features]');
+  var type = document.querySelector('#housing-type');
+  var rooms = document.querySelector('#housing-rooms');
+  var guests = document.querySelector('#housing-guests');
+  var prices = document.querySelector('#housing-price');
+  var wifi = document.querySelector('#filter-wifi');
+  var dishwasher = document.querySelector('#filter-dishwasher');
+  var parking = document.querySelector('#filter-parking');
+  var washer = document.querySelector('#filter-washer');
+  var elevator = document.querySelector('#filter-elevator');
+  var conditioner = document.querySelector('#filter-conditioner');
 
   addEventsToFilter();
 
@@ -48,17 +58,6 @@
    */
   function getWeight(rentalUnit) {
     var weight = 0;
-    var type = document.querySelector('#housing-type');
-    var rooms = document.querySelector('#housing-rooms');
-    var guests = document.querySelector('#housing-guests');
-    var prices = document.querySelector('#housing-price');
-
-    var wifi = document.querySelector('#filter-wifi');
-    var dishwasher = document.querySelector('#filter-dishwasher');
-    var parking = document.querySelector('#filter-parking');
-    var washer = document.querySelector('#filter-washer');
-    var elevator = document.querySelector('#filter-elevator');
-    var conditioner = document.querySelector('#filter-conditioner');
 
     weight += getOfferWeight(rentalUnit.offer.type, type.value);
     weight += getOfferWeight(rentalUnit.offer.rooms, +rooms.value);

@@ -42,6 +42,7 @@
   fileImageChooser.addEventListener('change', fileChangeHandler(fileImageChooser, previewImage, imagePreviewCallback));
   avatarDropZone.addEventListener('drop', fileDropHandler);
   imageDropZone.addEventListener('drop', fileDropHandler);
+  price.min = window.constants.PRICES[1];
 
   /**
    * Handler for form submission.
@@ -52,6 +53,7 @@
     window.backend.save(new FormData(form), window.pin.siteReset, window.backend.errorHandler);
     window.util.clearCollection(previewImage.querySelectorAll('img'));
     previewAvatar.src = 'img/muffin.png';
+    price.min = window.constants.PRICES[1];
   }
 
   /**
