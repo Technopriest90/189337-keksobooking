@@ -7,6 +7,7 @@
   var pinsTemplate = document.querySelector('template').content.querySelector('.map__pin');
   var pinsPlace = map.querySelector('.map__pins');
   var cardTemplate = document.querySelector('template').content.querySelector('.map__card');
+  var mapPinsOverlay = map.querySelector('.map__pinsoverlay');
 
   window.pin = {
 
@@ -33,7 +34,24 @@
      * Updates the pins on the map.
      */
     updatePins: function () {
-      addPinsToMap(window.constants.RENTAL_UNITS.slice(1).sort(pinsSortingCallback).filter(pinsFilterCallback), window.constants.NUMBER_OF_RENTAL_UNIT);
+      addPinsToMap(window.constants.RENTAL_UNITS.slice(1).sort(window.filter.pinsSortingCallback).filter(window.filter.pinsFilterCallback), window.constants.NUMBER_OF_RENTAL_UNIT);
+    },
+    /**
+     * Returns the site to its original appearance.
+     */
+    siteReset: function () {
+      map.classList.add('map--faded');
+      form.classList.add('notice__form--disabled');
+      window.pin.disableFieldset(true);
+      window.util.clearChildren(pinsPlace);
+      pinsPlace.appendChild(mapPinsOverlay).cloneNode(true);
+      pinsPlace.appendChild(mapPinMain).cloneNode(true);
+      window.pin.pinMainAddHandlers(mapPinMain);
+      mapPinMain.style.left = window.constants.BASE_PIN_COORD.x + 'px';
+      mapPinMain.style.top = window.constants.BASE_PIN_COORD.y + 'px';
+      form.reset();
+      window.util.scrollUp();
+      window.backend.errorHandler('Форма успешно отправлена!');
     }
   };
 
@@ -43,131 +61,7 @@
    */
   function loadHandler(data) {
     window.constants.RENTAL_UNITS = data;
-    addPinsToMap(data);
-  }
-
-  /**
-   * Function for the filter of rental units.
-   * @param {object} rentalUnit - Left element of in the sorting.
-   * @param {number} i - Formal parameter.
-   * @param {array} array - Original array.
-   * @return {bool} - Value fot filter.
-   */
-  function pinsFilterCallback(rentalUnit, i, array) {
-    return getWeight(array[0]) === getWeight(rentalUnit);
-  }
-
-  /**
-   * The sort function of rental units.
-   * @param {object} left - Left element of in the sorting.
-   * @param {object} right - Right element of in the sorting.
-   * @return {number} diffRank - Value fot sorting.
-   */
-  function pinsSortingCallback(left, right) {
-    var diffRank = getWeight(right) - getWeight(left);
-    return diffRank;
-  }
-
-  /**
-   * Gets the weight of rental unit.
-   * @param {object} rentalUnit - Data of the rental unit.
-   * @return {number} wieght - The weight of rental unit
-   */
-  function getWeight(rentalUnit) {
-    var weight = 0;
-    var type = document.querySelector('#housing-type');
-    var rooms = document.querySelector('#housing-rooms');
-    var guests = document.querySelector('#housing-guests');
-    var prices = document.querySelector('#housing-price');
-
-    var wifi = document.querySelector('#filter-wifi');
-    var dishwasher = document.querySelector('#filter-dishwasher');
-    var parking = document.querySelector('#filter-parking');
-    var washer = document.querySelector('#filter-washer');
-    var elevator = document.querySelector('#filter-elevator');
-    var conditioner = document.querySelector('#filter-conditioner');
-
-    weight += getOfferWeight(rentalUnit.offer.type, type.value);
-    weight += getOfferWeight(rentalUnit.offer.rooms, +rooms.value);
-    weight += getOfferWeight(rentalUnit.offer.guests, +guests.value);
-
-    weight += getPriceStatus(rentalUnit.offer.price, prices.value);
-
-    weight += getOfferFeatureWeight(wifi, rentalUnit);
-    weight += getOfferFeatureWeight(dishwasher, rentalUnit);
-    weight += getOfferFeatureWeight(parking, rentalUnit);
-    weight += getOfferFeatureWeight(washer, rentalUnit);
-    weight += getOfferFeatureWeight(elevator, rentalUnit);
-    weight += getOfferFeatureWeight(conditioner, rentalUnit);
-
-    return weight;
-  }
-
-  /**
-   * Gets the weight for the offer of rental unit.
-   * @param {*} offer - Value of the offer of rental unit.
-   * @param {*} fieldValue - The value of the field filter.
-   * @return {number} - 1 or 0.
-   */
-  function getOfferWeight(offer, fieldValue) {
-    if (offer === fieldValue) {
-      return 1;
-    }
-    return 0;
-  }
-
-  /**
-   * Gets the weight for the feature of rental unit.
-   * @param {object} field - The filter field on check features.
-   * @param {object} rentalUnit - The data of the rental unit.
-   * @return {number} - 1 or 0.
-   */
-  function getOfferFeatureWeight(field, rentalUnit) {
-    if (field.checked && ~rentalUnit.offer.features.indexOf(window.constants.FEATURES[window.constants.FEATURES.indexOf(field.value)])) {
-      return 1;
-    }
-    return 0;
-  }
-
-  /**
-   * Gets the weight for the price of rental unit.
-   * @param {number} price - Price of rental unit.
-   * @param {string} status - The name of the price range.
-   * @return {number} - 1 or 0.
-   */
-  function getPriceStatus(price, status) {
-    if (status === 'low' && price < window.constants.PRICES_FILTER.low) {
-      return 1;
-    } else if (status === 'middle' && price > window.constants.PRICES_FILTER.middle[0] && price < window.constants.PRICES_FILTER.middle[1]) {
-      return 1;
-    } else if (status === 'high' && price > window.constants.PRICES_FILTER.high) {
-      return 1;
-    } else {
-      return 0;
-    }
-  }
-
-  /**
-   * Checks whether the filter is turned off.
-   * @return {bool} - true is disable, false is enable.
-   */
-  function checkDisableFilter() {
-    var type = document.querySelector('#housing-type');
-    var rooms = document.querySelector('#housing-rooms');
-    var guests = document.querySelector('#housing-guests');
-    var prices = document.querySelector('#housing-price');
-    var wifi = document.querySelector('#filter-wifi');
-    var dishwasher = document.querySelector('#filter-dishwasher');
-    var parking = document.querySelector('#filter-parking');
-    var washer = document.querySelector('#filter-washer');
-    var elevator = document.querySelector('#filter-elevator');
-    var conditioner = document.querySelector('#filter-conditioner');
-
-    if (type.value === 'any' && rooms.value === 'any' && guests.value === 'any' && prices.value === 'any' && !wifi.checked && !dishwasher.checked && !parking.checked && !washer.checked && !elevator.checked && !conditioner.checked) {
-      return true;
-    } else {
-      return false;
-    }
+    addPinsToMap(data, window.constants.NUMBER_OF_RENTAL_UNIT);
   }
 
   /**
@@ -178,8 +72,8 @@
    */
   function renderPin(rentalUnit, pinTemplate) {
     var pin = pinTemplate.cloneNode(true);
-    pin.style.left = rentalUnit.location.x + 'px';
-    pin.style.top = rentalUnit.location.y + 'px';
+    pin.style.left = rentalUnit.location.x - window.constants.OFFSET_X + 'px';
+    pin.style.top = rentalUnit.location.y - window.constants.OFFSET_Y + 'px';
     pin.querySelector('img').setAttribute('src', rentalUnit.author.avatar);
     return pin;
   }
@@ -190,12 +84,9 @@
    * @param {number} count - Count of rental units.
    */
   function addPinsToMap(rental, count) {
-    if (checkDisableFilter()) {
-      count = rental.length;
-    } else if (count > rental.length) {
+    if (count > rental.length) {
       count = rental.length;
     }
-
     window.util.clearChildren(pinsPlace);
     pinsPlace.appendChild(mapPinMain).cloneNode(true);
     var temp = document.createDocumentFragment();
@@ -234,7 +125,7 @@
   function pinClickHandler(evt) {
     clearActivePin();
     evt.currentTarget.classList.add('map__pin--active');
-    var locationX = parseInt(evt.currentTarget.style.left, 10);
+    var locationX = parseInt(evt.currentTarget.style.left, 10) + window.constants.OFFSET_X;
     window.showCard(window.constants.RENTAL_UNITS, locationX, cardTemplate, pinsPlace);
     var cardClose = map.querySelector('.popup__close');
     if (cardClose) {
@@ -332,14 +223,12 @@
      * @param {number} positionX - Coordinate position of the pin along the X-axis.
      */
     function xRestriction(positionX) {
-      var pinCircleWidth = mapPinMain.querySelector('img').offsetWidth + 20;
-      var rightRestriction = 1200;
-      var leftRestriction = 0;
+      var pinCircleWidth = mapPinMain.querySelector('img').offsetWidth + window.constants.PIN_PADDING;
 
-      if (positionX < (leftRestriction + (pinCircleWidth / 2))) {
-        mapPinMain.style.left = (leftRestriction + (pinCircleWidth / 2)) + 'px';
-      } else if (positionX > (rightRestriction - (pinCircleWidth / 2))) {
-        mapPinMain.style.left = (rightRestriction - (pinCircleWidth / 2)) + 'px';
+      if (positionX < (window.constants.RESTRICTION.left + (pinCircleWidth / 2))) {
+        mapPinMain.style.left = (window.constants.RESTRICTION.left + (pinCircleWidth / 2)) + 'px';
+      } else if (positionX > (window.constants.RESTRICTION.right - (pinCircleWidth / 2))) {
+        mapPinMain.style.left = (window.constants.RESTRICTION.right - (pinCircleWidth / 2)) + 'px';
       } else {
         mapPinMain.style.left = positionX + 'px';
       }
@@ -351,13 +240,10 @@
      * @param {number} heightToTail - The distance between the center pin and the tip of the tail.
      */
     function yRestriction(positionY, heightToTail) {
-      var upperRestriction = 200;
-      var lowerRestriction = 700;
-
-      if (positionY < (upperRestriction - heightToTail)) {
-        mapPinMain.style.top = (upperRestriction - heightToTail) + 'px';
-      } else if (positionY > (lowerRestriction - heightToTail)) {
-        mapPinMain.style.top = (lowerRestriction - heightToTail) + 'px';
+      if (positionY < (window.constants.RESTRICTION.top - heightToTail)) {
+        mapPinMain.style.top = (window.constants.RESTRICTION.top - heightToTail) + 'px';
+      } else if (positionY > (window.constants.RESTRICTION.down - heightToTail)) {
+        mapPinMain.style.top = (window.constants.RESTRICTION.down - heightToTail) + 'px';
       } else {
         mapPinMain.style.top = positionY + 'px';
       }

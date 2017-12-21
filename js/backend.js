@@ -43,6 +43,9 @@
       errorWindow.style.backgroundColor = 'white';
       errorWindow.textContent = errorMessage;
       document.body.insertAdjacentElement('afterbegin', errorWindow);
+      setTimeout(function () {
+        document.body.children[0].remove();
+      }, window.constants.ERRORMSG_TIME);
     }
   };
 
@@ -58,7 +61,7 @@
     xhr.responseType = 'json';
 
     xhr.addEventListener('load', function () {
-      if (xhr.status === 200) {
+      if (xhr.status === window.constants.CODE_OK) {
         onLoad(xhr.response);
       } else {
         onError('Неизвестный статус: ' + xhr.status + ' ' + xhr.statusText);
@@ -73,7 +76,7 @@
       onError('Запрос не успел выполниться за ' + xhr.timeout + ' мс');
     });
 
-    xhr.timeout = 2000;
+    xhr.timeout = window.constants.TIMEOUT_TIME;
 
     return xhr;
   }
