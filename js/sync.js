@@ -5,8 +5,8 @@
      * Connects one field with another..
      * @param {object} firstField - Link to first field.
      * @param {object} secondField - Link to second field.
-     * @param {array} firstValues - An array with the valuesCb of the first field.
-     * @param {array} secondValues - An array with the valuesCb of the second field
+     * @param {array} firstValues - An array with the values of the first field.
+     * @param {array} secondValues - An array with the values of the second field
      * @param {function} action - The action at which contact events.
      */
     fields: function (firstField, secondField, firstValues, secondValues, action) {
